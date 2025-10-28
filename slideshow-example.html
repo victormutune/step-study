@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Homepage Slideshow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Slideshow Container */
+        .slideshow-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Individual Slide */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        /* Ken Burns Effect */
+        .slide-image {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transform: scale(1);
+            transition: transform 5s ease-out;
+        }
+
+        .slide.active .slide-image {
+            transform: scale(1.1);
+        }
+
+        /* Dark Overlay */
+        .slide-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        /* Content Overlay */
+        .slide-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            z-index: 2;
+            max-width: 90%;
+            width: 100%;
+        }
+
+        .slide-title {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+            line-height: 1.2;
+        }
+
+        .slide-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+            opacity: 0.9;
+        }
+
+        /* CTA Buttons */
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #1f2937;
+            transform: translateY(-2px);
+        }
+
+        /* Slide Indicators */
+        .slide-indicators {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 3;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: white;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .indicator:hover {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-indicator::before {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 40px;
+            border: 2px solid white;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .scroll-indicator::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 12px;
+            background: white;
+            border-radius: 2px;
+            animation: scroll-dot 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+
+        @keyframes scroll-dot {
+            0% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 200px;
+                justify-content: center;
+            }
+
+            .slide-content {
+                padding: 0 20px;
+            }
+        }
+
+        /* Loading Animation */
+        .slideshow-container.loading {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .slideshow-container.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="slideshow-container" id="slideshow">
+        <!-- Slide 1 -->
+        <div class="slide active">
+            <div class="slide-image" style="background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80');"></div>
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h1 class="slide-title">Welcome to Our Platform</h1>
+                <p class="slide-subtitle">Discover amazing possibilities with our innovative solutions</p>
+                <div class="cta-buttons">
+                    <a href="#" class="btn btn-primary">Get Started →</a>
+                    <a href="#" class="btn btn-secondary">▶ Learn More</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide">
+            <div class="slide-image" style="background-image: url('https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');"></div>
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h1 class="slide-title">Innovation at Its Best</h1>
+                <p class="slide-subtitle">Experience cutting-edge technology that transforms your workflow</p>
+                <div class="cta-buttons">
+                    <a href="#" class="btn btn-primary">Explore Features →</a>
+                    <a href="#" class="btn btn-secondary">▶ Watch Demo</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide">
+            <div class="slide-image" style="background-image: url('https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');"></div>
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h1 class="slide-title">Join Our Community</h1>
+                <p class="slide-subtitle">Connect with thousands of professionals worldwide</p>
+                <div class="cta-buttons">
+                    <a href="#" class="btn btn-primary">Join Now →</a>
+                    <a href="#" class="btn btn-secondary">▶ Success Stories</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="slide">
+            <div class="slide-image" style="background-image: url('https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=2126&q=80');"></div>
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h1 class="slide-title">Excellence Delivered</h1>
+                <p class="slide-subtitle">Quality solutions that exceed expectations every time</p>
+                <div class="cta-buttons">
+                    <a href="#" class="btn btn-primary">Start Today →</a>
+                    <a href="#" class="btn btn-secondary">▶ Our Process</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide Indicators -->
+        <div class="slide-indicators">
+            <button class="indicator active" data-slide="0"></button>
+            <button class="indicator" data-slide="1"></button>
+            <button class="indicator" data-slide="2"></button>
+            <button class="indicator" data-slide="3"></button>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator"></div>
+    </div>
+
+    <script>
+        class ModernSlideshow {
+            constructor(container) {
+                this.container = container;
+                this.slides = container.querySelectorAll('.slide');
+                this.indicators = container.querySelectorAll('.indicator');
+                this.currentSlide = 0;
+                this.isPlaying = true;
+                this.slideInterval = null;
+                this.slideDuration = 5000; // 5 seconds per slide
+                
+                this.init();
+            }
+
+            init() {
+                // Remove loading state
+                this.container.classList.remove('loading');
+                
+                // Set up event listeners
+                this.setupEventListeners();
+                
+                // Start autoplay
+                this.startAutoplay();
+                
+                // Preload images
+                this.preloadImages();
+            }
+
+            setupEventListeners() {
+                // Indicator clicks
+                this.indicators.forEach((indicator, index) => {
+                    indicator.addEventListener('click', () => {
+                        this.goToSlide(index);
+                    });
+                });
+
+                // Pause on hover
+                this.container.addEventListener('mouseenter', () => {
+                    this.pauseAutoplay();
+                });
+
+                this.container.addEventListener('mouseleave', () => {
+                    this.startAutoplay();
+                });
+
+                // Keyboard navigation
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowLeft') {
+                        this.previousSlide();
+                    } else if (e.key === 'ArrowRight') {
+                        this.nextSlide();
+                    }
+                });
+
+                // Touch/swipe support
+                let startX = 0;
+                let endX = 0;
+
+                this.container.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                });
+
+                this.container.addEventListener('touchend', (e) => {
+                    endX = e.changedTouches[0].clientX;
+                    this.handleSwipe(startX, endX);
+                });
+            }
+
+            handleSwipe(startX, endX) {
+                const threshold = 50;
+                const diff = startX - endX;
+
+                if (Math.abs(diff) > threshold) {
+                    if (diff > 0) {
+                        this.nextSlide();
+                    } else {
+                        this.previousSlide();
+                    }
+                }
+            }
+
+            preloadImages() {
+                this.slides.forEach(slide => {
+                    const imageElement = slide.querySelector('.slide-image');
+                    const bgImage = window.getComputedStyle(imageElement).backgroundImage;
+                    const imageUrl = bgImage.slice(4, -1).replace(/"/g, "");
+                    
+                    if (imageUrl && imageUrl !== 'none') {
+                        const img = new Image();
+                        img.src = imageUrl;
+                    }
+                });
+            }
+
+            goToSlide(index) {
+                // Remove active class from current slide and indicator
+                this.slides[this.currentSlide].classList.remove('active');
+                this.indicators[this.currentSlide].classList.remove('active');
+
+                // Update current slide index
+                this.currentSlide = index;
+
+                // Add active class to new slide and indicator
+                this.slides[this.currentSlide].classList.add('active');
+                this.indicators[this.currentSlide].classList.add('active');
+
+                // Restart autoplay
+                this.restartAutoplay();
+            }
+
+            nextSlide() {
+                const nextIndex = (this.currentSlide + 1) % this.slides.length;
+                this.goToSlide(nextIndex);
+            }
+
+            previousSlide() {
+                const prevIndex = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
+                this.goToSlide(prevIndex);
+            }
+
+            startAutoplay() {
+                if (!this.isPlaying) return;
+                
+                this.slideInterval = setInterval(() => {
+                    this.nextSlide();
+                }, this.slideDuration);
+            }
+
+            pauseAutoplay() {
+                if (this.slideInterval) {
+                    clearInterval(this.slideInterval);
+                    this.slideInterval = null;
+                }
+            }
+
+            restartAutoplay() {
+                this.pauseAutoplay();
+                this.startAutoplay();
+            }
+
+            play() {
+                this.isPlaying = true;
+                this.startAutoplay();
+            }
+
+            pause() {
+                this.isPlaying = false;
+                this.pauseAutoplay();
+            }
+        }
+
+        // Initialize slideshow when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const slideshowContainer = document.getElementById('slideshow');
+            if (slideshowContainer) {
+                new ModernSlideshow(slideshowContainer);
+            }
+        });
+
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', () => {
+            const slideshow = document.getElementById('slideshow');
+            if (slideshow && slideshow.slideshowInstance) {
+                if (document.hidden) {
+                    slideshow.slideshowInstance.pause();
+                } else {
+                    slideshow.slideshowInstance.play();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tanzania Zonal Statistics - Research Data</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8fafc;
+        }
+
+        .statistics-section {
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            letter-spacing: -0.025em;
+        }
+
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: #64748b;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            line-height: 1.7;
+        }
+
+        .summary-stats {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-number.blue { color: #3b82f6; }
+        .stat-number.green { color: #10b981; }
+        .stat-number.purple { color: #8b5cf6; }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .zones-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .zone-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .zone-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .zone-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .zone-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .zone-regions {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 1.5rem;
+        }
+
+        .zone-badge {
+            background: #e2e8f0;
+            color: #475569;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .data-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .data-section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .data-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 0.5rem;
+        }
+
+        .data-section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .demographics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .demo-item {
+            padding: 0.75rem;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .demo-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+        }
+
+        .demo-value {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .activity-list, .resource-list {
+            list-style: none;
+        }
+
+        .activity-list li, .resource-list li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: #475569;
+        }
+
+        .activity-list li::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            margin-right: 0.75rem;
+            margin-top: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .resource-list li::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #8b5cf6;
+            border-radius: 50%;
+            margin-right: 0.75rem;
+            margin-top: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .data-source {
+            background: #dbeafe;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .data-source h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .data-source p {
+            font-size: 0.875rem;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .zones-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .demographics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="statistics-section">
+        <div class="container">
+            <!-- Section Header -->
+            <div class="section-header">
+                <h2 class="section-title">Tanzania Zonal Statistics</h2>
+                <p class="section-subtitle">
+                    Comprehensive demographic and economic data across Tanzania's administrative zones, supporting 
+                    evidence-based research and policy development.
+                </p>
+                
+                <!-- Summary Statistics -->
+                <div class="summary-stats">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number blue">8</div>
+                            <div class="stat-label">Administrative Zones</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number green">45.0M</div>
+                            <div class="stat-label">Total Population</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number purple">31</div>
+                            <div class="stat-label">Administrative Regions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zones Grid -->
+            <div class="zones-grid">
+                <!-- Northern Zone -->
+                <div class="zone-card">
+                    <div class="zone-header">
+                        <div>
+                            <h3 class="zone-title">Northern Zone</h3>
+                            <div class="zone-regions">Arusha, Kilimanjaro, Manyara, Tanga</div>
+                        </div>
+                        <span class="zone-badge">4 regions</span>
+                    </div>
+
+                    <!-- Demographics -->
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#3b82f6" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <h4 class="data-section-title">Demographics</h4>
+                        </div>
+                        <div class="demographics-grid">
+                            <div class="demo-item">
+                                <div class="demo-label">Population</div>
+                                <div class="demo-value">7.2 million</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Growth Rate</div>
+                                <div class="demo-value">2.8%</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Urbanization</div>
+                                <div class="demo-value">28%</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Literacy Rate</div>
+                                <div class="demo-value">78%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Economic Activities -->
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#10b981" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            <h4 class="data-section-title">Key Economic Activities</h4>
+                        </div>
+                        <ul class="activity-list">
+                            <li>Tourism and wildlife conservation</li>
+                            <li>Coffee and tea production</li>
+                            <li>Horticulture and floriculture</li>
+                            <li>Mining (gemstones)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Major Resources -->
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#8b5cf6" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                            </svg>
+                            <h4 class="data-section-title">Major Resources</h4>
+                        </div>
+                        <ul class="resource-list">
+                            <li>Mount Kilimanjaro</li>
+                            <li>Serengeti National Park</li>
+                            <li>Ngorongoro Crater</li>
+                            <li>Tanzanite deposits</li>
+                            <li>Agricultural land</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Central Zone -->
+                <div class="zone-card">
+                    <div class="zone-header">
+                        <div>
+                            <h3 class="zone-title">Central Zone</h3>
+                            <div class="zone-regions">Dodoma, Singida</div>
+                        </div>
+                        <span class="zone-badge">2 regions</span>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#3b82f6" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <h4 class="data-section-title">Demographics</h4>
+                        </div>
+                        <div class="demographics-grid">
+                            <div class="demo-item">
+                                <div class="demo-label">Population</div>
+                                <div class="demo-value">3.1 million</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Growth Rate</div>
+                                <div class="demo-value">2.4%</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Urbanization</div>
+                                <div class="demo-value">22%</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Literacy Rate</div>
+                                <div class="demo-value">71%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#10b981" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            <h4 class="data-section-title">Key Economic Activities</h4>
+                        </div>
+                        <ul class="activity-list">
+                            <li>Livestock keeping</li>
+                            <li>Sunflower and groundnut farming</li>
+                            <li>Government administration</li>
+                            <li>Small-scale mining</li>
+                        </ul>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#8b5cf6" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                            </svg>
+                            <h4 class="data-section-title">Major Resources</h4>
+                        </div>
+                        <ul class="resource-list">
+                            <li>Livestock (cattle, goats)</li>
+                            <li>Sunflower oil production</li>
+                            <li>Government institutions</li>
+                            <li>Semi-arid grazing land</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Western Zone -->
+                <div class="zone-card">
+                    <div class="zone-header">
+                        <div>
+                            <h3 class="zone-title">Western Zone</h3>
+                            <div class="zone-regions">Tabora, Kigoma, Katavi, Rukwa</div>
+                        </div>
+                        <span class="zone-badge">4 regions</span>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#3b82f6" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <h4 class="data-section-title">Demographics</h4>
+                        </div>
+                        <div class="demographics-grid">
+                            <div class="demo-item">
+                                <div class="demo-label">Population</div>
+                                <div class="demo-value">4.8 million</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Growth Rate</div>
+                                <div class="demo-value">2.6%</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Urbanization</div>
+                                <div class="demo-value">18%</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Literacy Rate</div>
+                                <div class="demo-value">68%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#10b981" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            <h4 class="data-section-title">Key Economic Activities</h4>
+                        </div>
+                        <ul class="activity-list">
+                            <li>Tobacco farming</li>
+                            <li>Fishing (Lake Tanganyika)</li>
+                            <li>Honey production</li>
+                            <li>Cross-border trade</li>
+                        </ul>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#8b5cf6" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                            </svg>
+                            <h4 class="data-section-title">Major Resources</h4>
+                        </div>
+                        <ul class="resource-list">
+                            <li>Lake Tanganyika</li>
+                            <li>Tobacco plantations</li>
+                            <li>Forest reserves</li>
+                            <li>Freshwater fisheries</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Lake Zone -->
+                <div class="zone-card">
+                    <div class="zone-header">
+                        <div>
+                            <h3 class="zone-title">Lake Zone</h3>
+                            <div class="zone-regions">Mwanza, Shinyanga, Kagera, Mara, Simiyu, Geita</div>
+                        </div>
+                        <span class="zone-badge">6 regions</span>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#3b82f6" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <h4 class="data-section-title">Demographics</h4>
+                        </div>
+                        <div class="demographics-grid">
+                            <div class="demo-item">
+                                <div class="demo-label">Population</div>
+                                <div class="demo-value">9.4 million</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Growth Rate</div>
+                                <div class="demo-value">3.1%</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Urbanization</div>
+                                <div class="demo-value">25%</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Literacy Rate</div>
+                                <div class="demo-value">74%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#10b981" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            <h4 class="data-section-title">Key Economic Activities</h4>
+                        </div>
+                        <ul class="activity-list">
+                            <li>Gold mining</li>
+                            <li>Cotton production</li>
+                            <li>Fishing (Lake Victoria)</li>
+                            <li>Rice cultivation</li>
+                        </ul>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#8b5cf6" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                            </svg>
+                            <h4 class="data-section-title">Major Resources</h4>
+                        </div>
+                        <ul class="resource-list">
+                            <li>Lake Victoria</li>
+                            <li>Gold deposits</li>
+                            <li>Cotton fields</li>
+                            <li>Freshwater fisheries</li>
+                            <li>Agricultural land</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Southern Zone -->
+                <div class="zone-card">
+                    <div class="zone-header">
+                        <div>
+                            <h3 class="zone-title">Southern Zone</h3>
+                            <div class="zone-regions">Mtwara, Lindi, Ruvuma</div>
+                        </div>
+                        <span class="zone-badge">3 regions</span>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#3b82f6" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <h4 class="data-section-title">Demographics</h4>
+                        </div>
+                        <div class="demographics-grid">
+                            <div class="demo-item">
+                                <div class="demo-label">Population</div>
+                                <div class="demo-value">3.9 million</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Growth Rate</div>
+                                <div class="demo-value">2.2%</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Urbanization</div>
+                                <div class="demo-value">20%</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Literacy Rate</div>
+                                <div class="demo-value">69%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#10b981" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            <h4 class="data-section-title">Key Economic Activities</h4>
+                        </div>
+                        <ul class="activity-list">
+                            <li>Cashew nut production</li>
+                            <li>Natural gas extraction</li>
+                            <li>Sesame farming</li>
+                            <li>Coastal fishing</li>
+                        </ul>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#8b5cf6" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                            </svg>
+                            <h4 class="data-section-title">Major Resources</h4>
+                        </div>
+                        <ul class="resource-list">
+                            <li>Natural gas reserves</li>
+                            <li>Cashew plantations</li>
+                            <li>Indian Ocean coastline</li>
+                            <li>Sesame crops</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Southern Highlands -->
+                <div class="zone-card">
+                    <div class="zone-header">
+                        <div>
+                            <h3 class="zone-title">Southern Highlands</h3>
+                            <div class="zone-regions">Iringa, Njombe, Mbeya, Songwe</div>
+                        </div>
+                        <span class="zone-badge">4 regions</span>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#3b82f6" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <h4 class="data-section-title">Demographics</h4>
+                        </div>
+                        <div class="demographics-grid">
+                            <div class="demo-item">
+                                <div class="demo-label">Population</div>
+                                <div class="demo-value">5.6 million</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Growth Rate</div>
+                                <div class="demo-value">2.5%</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Urbanization</div>
+                                <div class="demo-value">24%</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Literacy Rate</div>
+                                <div class="demo-value">76%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#10b981" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            <h4 class="data-section-title">Key Economic Activities</h4>
+                        </div>
+                        <ul class="activity-list">
+                            <li>Tea and coffee production</li>
+                            <li>Maize and wheat farming</li>
+                            <li>Pyrethrum cultivation</li>
+                            <li>Hydroelectric power</li>
+                        </ul>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#8b5cf6" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                            </svg>
+                            <h4 class="data-section-title">Major Resources</h4>
+                        </div>
+                        <ul class="resource-list">
+                            <li>Highland climate</li>
+                            <li>Tea estates</li>
+                            <li>Hydroelectric potential</li>
+                            <li>Fertile volcanic soils</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Coastal Zone -->
+                <div class="zone-card">
+                    <div class="zone-header">
+                        <div>
+                            <h3 class="zone-title">Coastal Zone</h3>
+                            <div class="zone-regions">Dar es Salaam, Pwani, Morogoro</div>
+                        </div>
+                        <span class="zone-badge">3 regions</span>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#3b82f6" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <h4 class="data-section-title">Demographics</h4>
+                        </div>
+                        <div class="demographics-grid">
+                            <div class="demo-item">
+                                <div class="demo-label">Population</div>
+                                <div class="demo-value">8.7 million</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Growth Rate</div>
+                                <div class="demo-value">4.2%</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Urbanization</div>
+                                <div class="demo-value">68%</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Literacy Rate</div>
+                                <div class="demo-value">85%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#10b981" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            <h4 class="data-section-title">Key Economic Activities</h4>
+                        </div>
+                        <ul class="activity-list">
+                            <li>Port operations and trade</li>
+                            <li>Manufacturing industries</li>
+                            <li>Financial services</li>
+                            <li>Coconut and cashew farming</li>
+                        </ul>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#8b5cf6" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                            </svg>
+                            <h4 class="data-section-title">Major Resources</h4>
+                        </div>
+                        <ul class="resource-list">
+                            <li>Dar es Salaam Port</li>
+                            <li>Indian Ocean access</li>
+                            <li>Industrial infrastructure</li>
+                            <li>Commercial centers</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Eastern Zone -->
+                <div class="zone-card">
+                    <div class="zone-header">
+                        <div>
+                            <h3 class="zone-title">Eastern Zone</h3>
+                            <div class="zone-regions">Manyara (part), Morogoro (part)</div>
+                        </div>
+                        <span class="zone-badge">2 regions</span>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#3b82f6" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <h4 class="data-section-title">Demographics</h4>
+                        </div>
+                        <div class="demographics-grid">
+                            <div class="demo-item">
+                                <div class="demo-label">Population</div>
+                                <div class="demo-value">2.3 million</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Growth Rate</div>
+                                <div class="demo-value">2.3%</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Urbanization</div>
+                                <div class="demo-value">16%</div>
+                            </div>
+                            <div class="demo-item">
+                                <div class="demo-label">Literacy Rate</div>
+                                <div class="demo-value">65%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#10b981" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            <h4 class="data-section-title">Key Economic Activities</h4>
+                        </div>
+                        <ul class="activity-list">
+                            <li>Livestock keeping</li>
+                            <li>Maize and rice farming</li>
+                            <li>Small-scale trading</li>
+                            <li>Beekeeping</li>
+                        </ul>
+                    </div>
+
+                    <div class="data-section">
+                        <div class="data-section-header">
+                            <svg class="data-icon" fill="#8b5cf6" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                            </svg>
+                            <h4 class="data-section-title">Major Resources</h4>
+                        </div>
+                        <ul class="resource-list">
+                            <li>Grazing land</li>
+                            <li>Water sources</li>
+                            <li>Agricultural potential</li>
+                            <li>Livestock corridors</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Source -->
+            <div class="data-source">
+                <h3>Data Sources & Methodology</h3>
+                <p>
+                    Statistical data compiled from Tanzania National Bureau of Statistics (NBS), Ministry of Finance and Planning, 
+                    and regional development reports. Population estimates based on 2012 Census projections and annual growth rates. 
+                    Economic activity data sourced from sectoral surveys and administrative records. 
+                    <strong>Last updated: 2024</strong>
+                </p>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
